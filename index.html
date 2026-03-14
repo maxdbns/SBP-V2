@@ -6,7 +6,7 @@
 <title>SBP — Générateur de Fiches Prospects IA</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
-  :root { --navy:#0f2744;--navy-light:#1a3a5c;--orange:#e8570a;--orange-light:#f4874a;--cream:#f8f5f0;--gray:#6b7280;--border:#e5e0d8;--green:#1a6e3c;--green-bg:#edf7f1; }
+  :root{--navy:#0f2744;--navy-light:#1a3a5c;--orange:#e8570a;--orange-light:#f4874a;--cream:#f8f5f0;--gray:#6b7280;--border:#e5e0d8;--green:#1a6e3c;--green-bg:#edf7f1}
   *{margin:0;padding:0;box-sizing:border-box}
   body{font-family:'DM Sans',sans-serif;background:var(--cream);min-height:100vh;color:var(--navy)}
   .topbar{background:var(--navy);padding:14px 40px;display:flex;align-items:center;justify-content:space-between}
@@ -158,7 +158,9 @@ async function generateFiche() {
     document.getElementById(s).className='loading-step active';
   }, i*2000));
   const declencheurLabel = {job_change:'Changement de poste récent',cold:'Prospection froide',event:'Événement / Salon',referral:'Recommandation'}[declencheur];
-  const prompt = `Tu es expert sales B2B pour SBP Cartonnage Franche-Comté. Je veux une fiche prospect COMPLÈTE pour: ${prenom} ${nom}, ${poste||'poste non précisé'} chez ${societe}${societePrev?', anciennement '+societePrev:''}. Déclencheur: ${declencheurLabel}. Génère des informations RÉELLES et détaillées sur cette personne et cette entreprise. Retourne SEULEMENT un JSON valide sans markdown: {"initiales":"${(prenom[0]+nom[0]).toUpperCase()}","nom_complet":"${prenom} ${nom}","poste":"remplis avec le vrai poste","societe":"${societe}","localisation":"ville réelle en France","declencheur":"${declencheurLabel}","tags":["secteur","spécialité","autre"],"profil_description":"écris 2-3 phrases réelles sur ce profil professionnel","parcours":[{"poste":"poste réel","entreprise":"entreprise réelle","periode":"dates réelles","actuel":true}],"entreprise_chiffres":["CA réel ou estimé","effectifs réels","part de marché ou autre chiffre clé","implantation géographique","autre chiffre"],"entreprise_packaging":["enjeu packaging réel 1","enjeu packaging réel 2","enjeu packaging réel 3","info RSE ou innovation packaging"],"signaux":[{"emoji":"🔥","titre":"Signal réel 1","description":"explication concrète pourquoi c'est une opportunité pour SBP"},{"emoji":"📦","titre":"Signal réel 2","description":"explication concrète"},{"emoji":"🌱","titre":"Signal réel 3","description":"explication concrète"}],"email_objet":"objet email personnalisé et accrocheur","email_corps":"rédige un vrai email personnalisé chaleureux mentionnant SBP Cartonnage Franche-Comté et les enjeux spécifiques de cette entreprise","actions":["action concrète 1","action concrète 2","action concrète 3"],"arguments_sbp":["argument différenciant SBP 1","argument 2","argument 3"]}`;  try {
+  const initiales = (prenom[0]+nom[0]).toUpperCase();
+  const prompt = 'Tu es un expert en sales intelligence B2B pour SBP, une entreprise spécialisée dans le cartonnage et emballage en Franche-Comté. Génère une fiche prospect détaillée pour le contact suivant: Prenom=' + prenom + ', Nom=' + nom + ', Poste=' + (poste||'Non précisé') + ', Société=' + societe + (societePrev?', Ancienne société='+societePrev:'') + ', Déclencheur=' + declencheurLabel + '. Utilise tes connaissances sur cette personne et cette entreprise pour générer des informations réelles et pertinentes. Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks, sans commentaires). Le JSON doit avoir exactement ces champs: initiales (2 lettres maj), nom_complet (prénom nom), poste (le vrai poste), societe (le nom de la société), localisation (ville France), declencheur (le déclencheur), tags (tableau de 3 strings: secteur, spécialité, enjeu clé), profil_description (2-3 phrases décrivant ce professionnel et son expertise), parcours (tableau d objets avec poste, entreprise, periode, actuel:true/false - inclure poste actuel et 1-2 postes précédents), entreprise_chiffres (tableau de 5 strings avec CA, effectifs, part de marché, implantation, autre chiffre clé), entreprise_packaging (tableau de 4 strings décrivant les enjeux packaging et emballage de cette entreprise), signaux (tableau de 3 objets avec emoji, titre, description - chaque signal explique une opportunité concrète pour SBP cartonnage), email_objet (objet email accrocheur et personnalisé), email_corps (email complet chaleureux et personnalisé en 4-5 phrases mentionnant SBP Cartonnage Franche-Comté), actions (tableau de 3 strings avec actions commerciales recommandées), arguments_sbp (tableau de 3-4 strings avec arguments différenciants de SBP pour cette cible).';
+  try {
     const response = await fetch('/.netlify/functions/claude-proxy', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
@@ -169,9 +171,9 @@ async function generateFiche() {
     const text = data.text || '';
     if (!text) throw new Error('Réponse vide');
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Format invalide');
+    if (!jsonMatch) throw new Error('Format invalide: ' + text.substring(0,100));
     const fiche = JSON.parse(jsonMatch[0]);
-    fiche.initiales = fiche.initiales || (prenom[0]+nom[0]).toUpperCase();
+    fiche.initiales = fiche.initiales || initiales;
     fiche.nom_complet = fiche.nom_complet || prenom+' '+nom;
     fiche.poste = fiche.poste || poste || 'Non précisé';
     fiche.societe = fiche.societe || societe;
@@ -196,55 +198,53 @@ async function generateFiche() {
 }
 function renderFiche(f) {
   const today = new Date().toLocaleDateString('fr-FR');
-  const parcoursHTML = f.parcours.map(p=>`<div class="tl-item"><div class="tl-dot ${p.actuel?'active':''}"></div><div class="tl-text"><strong>${p.poste||''} — ${p.entreprise||''}</strong><br><span>${p.periode||''}</span></div></div>`).join('');
-  const signauxHTML = f.signaux.map(s=>`<div class="signal-box"><h4>${s.emoji||''} ${s.titre||''}</h4><p>${s.description||''}</p></div>`).join('');
-  document.getElementById('ficheCard').innerHTML = `
-    <div class="fiche-top">
-      <div class="fiche-top-left">
-        <div class="fiche-avatar">${f.initiales}</div>
-        <div>
-          <div class="fiche-name">${f.nom_complet}</div>
-          <div class="fiche-role">${f.poste}</div>
-          <div class="fiche-company">📍 ${f.societe} — ${f.localisation}</div>
-          <div class="fiche-tags"><span class="ftag orange">⚡ ${f.declencheur}</span>${f.tags.map(t=>`<span class="ftag">${t}</span>`).join('')}</div>
-        </div>
-      </div>
-      <div class="fiche-top-right">Généré le ${today}<br><strong>SBP Sales Intelligence</strong></div>
-    </div>
-    <div class="fiche-body">
-      <div class="fiche-section">
-        <div class="fiche-section-title">👤 Profil & Parcours</div>
-        <div class="fiche-grid">
-          <div class="fiche-box"><h4>Profil</h4><p>${f.profil_description}</p></div>
-          <div class="fiche-box"><h4>Parcours</h4><div class="timeline">${parcoursHTML}</div></div>
-        </div>
-      </div>
-      <div class="fiche-section">
-        <div class="fiche-section-title">🏢 ${f.societe}</div>
-        <div class="fiche-grid">
-          <div class="fiche-box"><h4>Chiffres clés</h4><ul>${f.entreprise_chiffres.map(c=>`<li>${c}</li>`).join('')}</ul></div>
-          <div class="fiche-box"><h4>Packaging</h4><ul>${f.entreprise_packaging.map(p=>`<li>${p}</li>`).join('')}</ul></div>
-        </div>
-      </div>
-      <div class="fiche-section">
-        <div class="fiche-section-title">⚡ Signaux d'opportunité</div>
-        ${signauxHTML}
-      </div>
-      <div class="fiche-section">
-        <div class="fiche-section-title">✉️ Email d'accroche</div>
-        <div class="email-box"><h4>📧 Email suggéré</h4><div class="email-preview"><strong>Objet :</strong> ${f.email_objet}
-
-${f.email_corps}</div></div>
-      </div>
-      <div class="fiche-section">
-        <div class="fiche-section-title">✅ Actions & Arguments</div>
-        <div class="fiche-grid">
-          <div class="fiche-box"><h4>Actions</h4><ul>${f.actions.map(a=>`<li>${a}</li>`).join('')}</ul></div>
-          <div class="fiche-box"><h4>Arguments SBP</h4><ul>${f.arguments_sbp.map(a=>`<li>${a}</li>`).join('')}</ul></div>
-        </div>
-      </div>
-    </div>
-    <div class="fiche-footer">SBP Sales Intelligence · Confidentiel usage interne</div>`;
+  const parcoursHTML = f.parcours.map(p=>'<div class="tl-item"><div class="tl-dot '+(p.actuel?'active':'')+'"></div><div class="tl-text"><strong>'+(p.poste||'')+' — '+(p.entreprise||'')+'</strong><br><span>'+(p.periode||'')+'</span></div></div>').join('');
+  const signauxHTML = f.signaux.map(s=>'<div class="signal-box"><h4>'+(s.emoji||'')+' '+(s.titre||'')+'</h4><p>'+(s.description||'')+'</p></div>').join('');
+  document.getElementById('ficheCard').innerHTML =
+    '<div class="fiche-top">' +
+      '<div class="fiche-top-left">' +
+        '<div class="fiche-avatar">'+f.initiales+'</div>' +
+        '<div>' +
+          '<div class="fiche-name">'+f.nom_complet+'</div>' +
+          '<div class="fiche-role">'+f.poste+'</div>' +
+          '<div class="fiche-company">📍 '+f.societe+' — '+f.localisation+'</div>' +
+          '<div class="fiche-tags"><span class="ftag orange">⚡ '+f.declencheur+'</span>'+f.tags.map(t=>'<span class="ftag">'+t+'</span>').join('')+'</div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="fiche-top-right">Généré le '+today+'<br><strong>SBP Sales Intelligence</strong></div>' +
+    '</div>' +
+    '<div class="fiche-body">' +
+      '<div class="fiche-section">' +
+        '<div class="fiche-section-title">👤 Profil & Parcours</div>' +
+        '<div class="fiche-grid">' +
+          '<div class="fiche-box"><h4>Profil</h4><p>'+f.profil_description+'</p></div>' +
+          '<div class="fiche-box"><h4>Parcours</h4><div class="timeline">'+parcoursHTML+'</div></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="fiche-section">' +
+        '<div class="fiche-section-title">🏢 '+f.societe+'</div>' +
+        '<div class="fiche-grid">' +
+          '<div class="fiche-box"><h4>Chiffres clés</h4><ul>'+f.entreprise_chiffres.map(c=>'<li>'+c+'</li>').join('')+'</ul></div>' +
+          '<div class="fiche-box"><h4>Enjeux Packaging</h4><ul>'+f.entreprise_packaging.map(p=>'<li>'+p+'</li>').join('')+'</ul></div>' +
+        '</div>' +
+      '</div>' +
+      '<div class="fiche-section">' +
+        '<div class="fiche-section-title">⚡ Signaux d\'opportunité</div>' +
+        signauxHTML +
+      '</div>' +
+      '<div class="fiche-section">' +
+        '<div class="fiche-section-title">✉️ Email d\'accroche</div>' +
+        '<div class="email-box"><h4>📧 Email suggéré</h4><div class="email-preview"><strong>Objet :</strong> '+f.email_objet+'\n\n'+f.email_corps+'</div></div>' +
+      '</div>' +
+      '<div class="fiche-section">' +
+        '<div class="fiche-section-title">✅ Actions & Arguments</div>' +
+        '<div class="fiche-grid">' +
+          '<div class="fiche-box"><h4>Actions recommandées</h4><ul>'+f.actions.map(a=>'<li>'+a+'</li>').join('')+'</ul></div>' +
+          '<div class="fiche-box"><h4>Arguments SBP</h4><ul>'+f.arguments_sbp.map(a=>'<li>'+a+'</li>').join('')+'</ul></div>' +
+        '</div>' +
+      '</div>' +
+    '</div>' +
+    '<div class="fiche-footer">SBP Sales Intelligence · Confidentiel usage interne</div>';
   document.getElementById('ficheOutput').className='fiche-output active';
   document.getElementById('ficheOutput').scrollIntoView({behavior:'smooth'});
 }
