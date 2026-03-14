@@ -142,6 +142,8 @@
   </div>
 </div>
 <script>
+const GEMINI_KEY = 'AIzaSyDoUIDN_9YccHADCQ4FusxIduyXtMNV3r4';
+
 async function generateFiche() {
   const prenom = document.getElementById('prenom').value.trim();
   const nom = document.getElementById('nom').value.trim();
@@ -159,19 +161,23 @@ async function generateFiche() {
   }, i*2000));
   const declencheurLabel = {job_change:'Changement de poste récent',cold:'Prospection froide',event:'Événement / Salon',referral:'Recommandation'}[declencheur];
   const initiales = (prenom[0]+nom[0]).toUpperCase();
-  const prompt = 'Tu es un expert en sales intelligence B2B pour SBP, une entreprise spécialisée dans le cartonnage et emballage en Franche-Comté. Génère une fiche prospect détaillée pour le contact suivant: Prenom=' + prenom + ', Nom=' + nom + ', Poste=' + (poste||'Non précisé') + ', Société=' + societe + (societePrev?', Ancienne société='+societePrev:'') + ', Déclencheur=' + declencheurLabel + '. Utilise tes connaissances sur cette personne et cette entreprise pour générer des informations réelles et pertinentes. Réponds UNIQUEMENT avec un objet JSON valide (sans markdown, sans backticks, sans commentaires). Le JSON doit avoir exactement ces champs: initiales (2 lettres maj), nom_complet (prénom nom), poste (le vrai poste), societe (le nom de la société), localisation (ville France), declencheur (le déclencheur), tags (tableau de 3 strings: secteur, spécialité, enjeu clé), profil_description (2-3 phrases décrivant ce professionnel et son expertise), parcours (tableau d objets avec poste, entreprise, periode, actuel:true/false - inclure poste actuel et 1-2 postes précédents), entreprise_chiffres (tableau de 5 strings avec CA, effectifs, part de marché, implantation, autre chiffre clé), entreprise_packaging (tableau de 4 strings décrivant les enjeux packaging et emballage de cette entreprise), signaux (tableau de 3 objets avec emoji, titre, description - chaque signal explique une opportunité concrète pour SBP cartonnage), email_objet (objet email accrocheur et personnalisé), email_corps (email complet chaleureux et personnalisé en 4-5 phrases mentionnant SBP Cartonnage Franche-Comté), actions (tableau de 3 strings avec actions commerciales recommandées), arguments_sbp (tableau de 3-4 strings avec arguments différenciants de SBP pour cette cible).';
+  const prompt = 'Tu es un expert en sales intelligence B2B pour SBP, une entreprise spécialisée dans le cartonnage et emballage en Franche-Comté. Génère une fiche prospect détaillée et COMPLÈTE pour: Prénom=' + prenom + ', Nom=' + nom + ', Poste=' + (poste||'Non précisé') + ', Société=' + societe + (societePrev?', Ancienne société='+societePrev:'') + ', Déclencheur=' + declencheurLabel + '. Utilise tes connaissances sur cette entreprise pour générer des informations réelles. Réponds UNIQUEMENT avec un objet JSON valide sans markdown ni backticks avec ces champs: initiales (string 2 lettres), nom_complet (string), poste (string), societe (string), localisation (string ville France), declencheur (string), tags (array 3 strings), profil_description (string 3 phrases sur ce professionnel), parcours (array objets: poste, entreprise, periode, actuel boolean), entreprise_chiffres (array 5 strings avec données réelles), entreprise_packaging (array 4 strings enjeux packaging réels), signaux (array 3 objets: emoji, titre, description opportunité SBP), email_objet (string accrocheur), email_corps (string email complet personnalisé mentionnant SBP Cartonnage Franche-Comté), actions (array 3 strings), arguments_sbp (array 3 strings).';
+
   try {
-    const response = await fetch('/.netlify/functions/claude-proxy', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=' + GEMINI_KEY, {
       method: 'POST',
-      headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({prompt})
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({
+        contents: [{parts: [{text: prompt}]}],
+        generationConfig: {maxOutputTokens: 8192, temperature: 0.7}
+      })
     });
     const data = await response.json();
-    if (data.error) throw new Error(data.error);
-    const text = data.text || '';
-    if (!text) throw new Error('Réponse vide');
+    if (data.error) throw new Error(data.error.message);
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!text) throw new Error('Réponse vide de Gemini');
     const jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Format invalide: ' + text.substring(0,100));
+    if (!jsonMatch) throw new Error('JSON introuvable dans la réponse');
     const fiche = JSON.parse(jsonMatch[0]);
     fiche.initiales = fiche.initiales || initiales;
     fiche.nom_complet = fiche.nom_complet || prenom+' '+nom;
@@ -196,55 +202,20 @@ async function generateFiche() {
     showError('Erreur : ' + err.message);
   }
 }
+
 function renderFiche(f) {
   const today = new Date().toLocaleDateString('fr-FR');
   const parcoursHTML = f.parcours.map(p=>'<div class="tl-item"><div class="tl-dot '+(p.actuel?'active':'')+'"></div><div class="tl-text"><strong>'+(p.poste||'')+' — '+(p.entreprise||'')+'</strong><br><span>'+(p.periode||'')+'</span></div></div>').join('');
   const signauxHTML = f.signaux.map(s=>'<div class="signal-box"><h4>'+(s.emoji||'')+' '+(s.titre||'')+'</h4><p>'+(s.description||'')+'</p></div>').join('');
   document.getElementById('ficheCard').innerHTML =
-    '<div class="fiche-top">' +
-      '<div class="fiche-top-left">' +
-        '<div class="fiche-avatar">'+f.initiales+'</div>' +
-        '<div>' +
-          '<div class="fiche-name">'+f.nom_complet+'</div>' +
-          '<div class="fiche-role">'+f.poste+'</div>' +
-          '<div class="fiche-company">📍 '+f.societe+' — '+f.localisation+'</div>' +
-          '<div class="fiche-tags"><span class="ftag orange">⚡ '+f.declencheur+'</span>'+f.tags.map(t=>'<span class="ftag">'+t+'</span>').join('')+'</div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="fiche-top-right">Généré le '+today+'<br><strong>SBP Sales Intelligence</strong></div>' +
-    '</div>' +
+    '<div class="fiche-top"><div class="fiche-top-left"><div class="fiche-avatar">'+f.initiales+'</div><div><div class="fiche-name">'+f.nom_complet+'</div><div class="fiche-role">'+f.poste+'</div><div class="fiche-company">📍 '+f.societe+' — '+f.localisation+'</div><div class="fiche-tags"><span class="ftag orange">⚡ '+f.declencheur+'</span>'+f.tags.map(t=>'<span class="ftag">'+t+'</span>').join('')+'</div></div></div><div class="fiche-top-right">Généré le '+today+'<br><strong>SBP Sales Intelligence</strong></div></div>' +
     '<div class="fiche-body">' +
-      '<div class="fiche-section">' +
-        '<div class="fiche-section-title">👤 Profil & Parcours</div>' +
-        '<div class="fiche-grid">' +
-          '<div class="fiche-box"><h4>Profil</h4><p>'+f.profil_description+'</p></div>' +
-          '<div class="fiche-box"><h4>Parcours</h4><div class="timeline">'+parcoursHTML+'</div></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="fiche-section">' +
-        '<div class="fiche-section-title">🏢 '+f.societe+'</div>' +
-        '<div class="fiche-grid">' +
-          '<div class="fiche-box"><h4>Chiffres clés</h4><ul>'+f.entreprise_chiffres.map(c=>'<li>'+c+'</li>').join('')+'</ul></div>' +
-          '<div class="fiche-box"><h4>Enjeux Packaging</h4><ul>'+f.entreprise_packaging.map(p=>'<li>'+p+'</li>').join('')+'</ul></div>' +
-        '</div>' +
-      '</div>' +
-      '<div class="fiche-section">' +
-        '<div class="fiche-section-title">⚡ Signaux d\'opportunité</div>' +
-        signauxHTML +
-      '</div>' +
-      '<div class="fiche-section">' +
-        '<div class="fiche-section-title">✉️ Email d\'accroche</div>' +
-        '<div class="email-box"><h4>📧 Email suggéré</h4><div class="email-preview"><strong>Objet :</strong> '+f.email_objet+'\n\n'+f.email_corps+'</div></div>' +
-      '</div>' +
-      '<div class="fiche-section">' +
-        '<div class="fiche-section-title">✅ Actions & Arguments</div>' +
-        '<div class="fiche-grid">' +
-          '<div class="fiche-box"><h4>Actions recommandées</h4><ul>'+f.actions.map(a=>'<li>'+a+'</li>').join('')+'</ul></div>' +
-          '<div class="fiche-box"><h4>Arguments SBP</h4><ul>'+f.arguments_sbp.map(a=>'<li>'+a+'</li>').join('')+'</ul></div>' +
-        '</div>' +
-      '</div>' +
-    '</div>' +
-    '<div class="fiche-footer">SBP Sales Intelligence · Confidentiel usage interne</div>';
+    '<div class="fiche-section"><div class="fiche-section-title">👤 Profil & Parcours</div><div class="fiche-grid"><div class="fiche-box"><h4>Profil</h4><p>'+f.profil_description+'</p></div><div class="fiche-box"><h4>Parcours</h4><div class="timeline">'+parcoursHTML+'</div></div></div></div>' +
+    '<div class="fiche-section"><div class="fiche-section-title">🏢 '+f.societe+'</div><div class="fiche-grid"><div class="fiche-box"><h4>Chiffres clés</h4><ul>'+f.entreprise_chiffres.map(c=>'<li>'+c+'</li>').join('')+'</ul></div><div class="fiche-box"><h4>Enjeux Packaging</h4><ul>'+f.entreprise_packaging.map(p=>'<li>'+p+'</li>').join('')+'</ul></div></div></div>' +
+    '<div class="fiche-section"><div class="fiche-section-title">⚡ Signaux d\'opportunité</div>'+signauxHTML+'</div>' +
+    '<div class="fiche-section"><div class="fiche-section-title">✉️ Email d\'accroche</div><div class="email-box"><h4>📧 Email suggéré</h4><div class="email-preview"><strong>Objet :</strong> '+f.email_objet+'\n\n'+f.email_corps+'</div></div></div>' +
+    '<div class="fiche-section"><div class="fiche-section-title">✅ Actions & Arguments</div><div class="fiche-grid"><div class="fiche-box"><h4>Actions recommandées</h4><ul>'+f.actions.map(a=>'<li>'+a+'</li>').join('')+'</ul></div><div class="fiche-box"><h4>Arguments SBP</h4><ul>'+f.arguments_sbp.map(a=>'<li>'+a+'</li>').join('')+'</ul></div></div></div>' +
+    '</div><div class="fiche-footer">SBP Sales Intelligence · Confidentiel usage interne</div>';
   document.getElementById('ficheOutput').className='fiche-output active';
   document.getElementById('ficheOutput').scrollIntoView({behavior:'smooth'});
 }
