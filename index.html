@@ -6,327 +6,74 @@
 <title>SBP — Générateur de Fiches Prospects IA</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Serif+Display:ital@0;1&display=swap');
-
   :root {
-    --navy: #0f2744;
-    --navy-light: #1a3a5c;
-    --orange: #e8570a;
-    --orange-light: #f4874a;
-    --cream: #f8f5f0;
-    --gray: #6b7280;
-    --border: #e5e0d8;
-    --green: #1a6e3c;
-    --green-bg: #edf7f1;
+    --navy: #0f2744; --navy-light: #1a3a5c; --orange: #e8570a; --orange-light: #f4874a;
+    --cream: #f8f5f0; --gray: #6b7280; --border: #e5e0d8; --green: #1a6e3c; --green-bg: #edf7f1;
   }
-
   * { margin: 0; padding: 0; box-sizing: border-box; }
-
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--cream);
-    min-height: 100vh;
-    color: var(--navy);
-  }
-
-  /* TOP BAR */
-  .topbar {
-    background: var(--navy);
-    padding: 14px 40px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
-  .topbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-  }
-  .topbar-logo {
-    width: 36px;
-    height: 36px;
-    background: var(--orange);
-    border-radius: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: 700;
-    color: white;
-    font-size: 14px;
-  }
-  .topbar-title {
-    color: white;
-    font-size: 15px;
-    font-weight: 600;
-  }
-  .topbar-subtitle {
-    color: #8faac4;
-    font-size: 12px;
-  }
-  .topbar-badge {
-    background: rgba(232,87,10,0.2);
-    color: var(--orange-light);
-    border: 1px solid rgba(232,87,10,0.3);
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 11px;
-    font-weight: 600;
-  }
-
-  /* MAIN LAYOUT */
-  .container {
-    max-width: 1100px;
-    margin: 0 auto;
-    padding: 40px 24px;
-  }
-
-  /* FORM SECTION */
-  .form-section {
-    background: white;
-    border-radius: 16px;
-    padding: 36px;
-    border: 1px solid var(--border);
-    box-shadow: 0 4px 24px rgba(15,39,68,0.08);
-    margin-bottom: 32px;
-  }
-
-  .form-header {
-    display: flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 28px;
-  }
-  .form-icon {
-    width: 48px;
-    height: 48px;
-    background: linear-gradient(135deg, var(--navy), var(--navy-light));
-    border-radius: 12px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 22px;
-  }
-  .form-header h2 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 22px;
-    color: var(--navy);
-  }
-  .form-header p {
-    font-size: 13px;
-    color: var(--gray);
-    margin-top: 2px;
-  }
-
-  .form-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 18px;
-    margin-bottom: 18px;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
-  }
-  .form-group.full { grid-column: 1 / -1; }
-
-  label {
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--navy);
-    text-transform: uppercase;
-    letter-spacing: 0.8px;
-  }
-
-  input, select, textarea {
-    padding: 12px 16px;
-    border: 1.5px solid var(--border);
-    border-radius: 10px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 14px;
-    color: var(--navy);
-    background: var(--cream);
-    transition: border-color 0.2s;
-    outline: none;
-  }
-  input:focus, select:focus, textarea:focus {
-    border-color: var(--navy);
-    background: white;
-  }
-  textarea { resize: vertical; min-height: 70px; }
-
-  .btn-generate {
-    width: 100%;
-    padding: 16px;
-    background: linear-gradient(135deg, var(--orange), #c94a08);
-    color: white;
-    border: none;
-    border-radius: 12px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 15px;
-    font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
-    letter-spacing: 0.3px;
-  }
+  body { font-family: 'DM Sans', sans-serif; background: var(--cream); min-height: 100vh; color: var(--navy); }
+  .topbar { background: var(--navy); padding: 14px 40px; display: flex; align-items: center; justify-content: space-between; }
+  .topbar-brand { display: flex; align-items: center; gap: 12px; }
+  .topbar-logo { width: 36px; height: 36px; background: var(--orange); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 700; color: white; font-size: 14px; }
+  .topbar-title { color: white; font-size: 15px; font-weight: 600; }
+  .topbar-subtitle { color: #8faac4; font-size: 12px; }
+  .topbar-badge { background: rgba(232,87,10,0.2); color: var(--orange-light); border: 1px solid rgba(232,87,10,0.3); padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+  .container { max-width: 1100px; margin: 0 auto; padding: 40px 24px; }
+  .form-section { background: white; border-radius: 16px; padding: 36px; border: 1px solid var(--border); box-shadow: 0 4px 24px rgba(15,39,68,0.08); margin-bottom: 32px; }
+  .form-header { display: flex; align-items: center; gap: 14px; margin-bottom: 28px; }
+  .form-icon { width: 48px; height: 48px; background: linear-gradient(135deg, var(--navy), var(--navy-light)); border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 22px; }
+  .form-header h2 { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--navy); }
+  .form-header p { font-size: 13px; color: var(--gray); margin-top: 2px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 18px; }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  label { font-size: 12px; font-weight: 600; color: var(--navy); text-transform: uppercase; letter-spacing: 0.8px; }
+  input, select, textarea { padding: 12px 16px; border: 1.5px solid var(--border); border-radius: 10px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--navy); background: var(--cream); transition: border-color 0.2s; outline: none; }
+  input:focus, select:focus, textarea:focus { border-color: var(--navy); background: white; }
+  .btn-generate { width: 100%; padding: 16px; background: linear-gradient(135deg, var(--orange), #c94a08); color: white; border: none; border-radius: 12px; font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; justify-content: center; gap: 10px; }
   .btn-generate:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,87,10,0.35); }
   .btn-generate:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
-
-  /* LOADING */
-  .loading {
-    display: none;
-    background: white;
-    border-radius: 16px;
-    padding: 60px 36px;
-    text-align: center;
-    border: 1px solid var(--border);
-    margin-bottom: 32px;
-  }
+  .loading { display: none; background: white; border-radius: 16px; padding: 60px 36px; text-align: center; border: 1px solid var(--border); margin-bottom: 32px; }
   .loading.active { display: block; }
-  .spinner {
-    width: 48px;
-    height: 48px;
-    border: 4px solid var(--border);
-    border-top-color: var(--orange);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin: 0 auto 20px;
-  }
+  .spinner { width: 48px; height: 48px; border: 4px solid var(--border); border-top-color: var(--orange); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto 20px; }
   @keyframes spin { to { transform: rotate(360deg); } }
   .loading h3 { font-size: 18px; color: var(--navy); margin-bottom: 8px; }
   .loading p { font-size: 13px; color: var(--gray); }
   .loading-steps { margin-top: 20px; display: flex; flex-direction: column; gap: 8px; }
-  .loading-step {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    font-size: 13px;
-    color: var(--gray);
-    padding: 8px 16px;
-    border-radius: 8px;
-    background: var(--cream);
-    transition: all 0.3s;
-  }
+  .loading-step { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray); padding: 8px 16px; border-radius: 8px; background: var(--cream); transition: all 0.3s; }
   .loading-step.active { color: var(--navy); background: #e8f0fa; font-weight: 500; }
   .loading-step.done { color: var(--green); background: var(--green-bg); }
-
-  /* FICHE OUTPUT */
-  .fiche-output {
-    display: none;
-  }
+  .fiche-output { display: none; }
   .fiche-output.active { display: block; }
-
-  .fiche-header-bar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 16px;
-  }
-  .fiche-header-bar h3 {
-    font-family: 'DM Serif Display', serif;
-    font-size: 20px;
-    color: var(--navy);
-  }
-  .btn-print {
-    padding: 10px 20px;
-    background: var(--navy);
-    color: white;
-    border: none;
-    border-radius: 8px;
-    font-family: 'DM Sans', sans-serif;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-  }
-  .btn-print:hover { background: var(--navy-light); }
-
-  /* FICHE CARD */
-  .fiche-card {
-    background: white;
-    border-radius: 16px;
-    overflow: hidden;
-    border: 1px solid var(--border);
-    box-shadow: 0 8px 32px rgba(15,39,68,0.12);
-  }
-
-  .fiche-top {
-    background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%);
-    padding: 28px 36px;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-  }
+  .fiche-header-bar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+  .fiche-header-bar h3 { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--navy); }
+  .btn-print { padding: 10px 20px; background: var(--navy); color: white; border: none; border-radius: 8px; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+  .fiche-card { background: white; border-radius: 16px; overflow: hidden; border: 1px solid var(--border); box-shadow: 0 8px 32px rgba(15,39,68,0.12); }
+  .fiche-top { background: linear-gradient(135deg, var(--navy) 0%, var(--navy-light) 100%); padding: 28px 36px; color: white; display: flex; justify-content: space-between; align-items: flex-start; }
   .fiche-top-left { display: flex; gap: 18px; align-items: flex-start; }
-  .fiche-avatar {
-    width: 64px; height: 64px;
-    border-radius: 50%;
-    background: rgba(255,255,255,0.15);
-    border: 2px solid rgba(255,255,255,0.3);
-    display: flex; align-items: center; justify-content: center;
-    font-size: 22px; font-weight: 700;
-    flex-shrink: 0;
-  }
+  .fiche-avatar { width: 64px; height: 64px; border-radius: 50%; background: rgba(255,255,255,0.15); border: 2px solid rgba(255,255,255,0.3); display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; flex-shrink: 0; }
   .fiche-name { font-family: 'DM Serif Display', serif; font-size: 22px; }
   .fiche-role { color: var(--orange-light); font-size: 14px; font-weight: 600; margin-top: 3px; }
   .fiche-company { color: rgba(255,255,255,0.7); font-size: 13px; margin-top: 2px; }
   .fiche-tags { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px; }
-  .ftag {
-    padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600;
-    background: rgba(255,255,255,0.15); color: white;
-  }
+  .ftag { padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; background: rgba(255,255,255,0.15); color: white; }
   .ftag.orange { background: rgba(232,87,10,0.4); color: #ffcba8; }
-  .ftag.green { background: rgba(26,110,60,0.4); color: #a8f0c4; }
   .fiche-top-right { text-align: right; font-size: 11px; color: rgba(255,255,255,0.5); }
   .fiche-top-right strong { color: rgba(255,255,255,0.9); font-size: 13px; }
-
   .fiche-body { padding: 28px 36px; }
-
   .fiche-section { margin-bottom: 24px; }
-  .fiche-section-title {
-    font-size: 11px; font-weight: 700; color: var(--navy);
-    text-transform: uppercase; letter-spacing: 1.2px;
-    border-bottom: 2px solid var(--navy); padding-bottom: 6px;
-    margin-bottom: 14px;
-    display: flex; align-items: center; gap: 8px;
-  }
-
+  .fiche-section-title { font-size: 11px; font-weight: 700; color: var(--navy); text-transform: uppercase; letter-spacing: 1.2px; border-bottom: 2px solid var(--navy); padding-bottom: 6px; margin-bottom: 14px; }
   .fiche-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .fiche-box {
-    background: var(--cream); border: 1px solid var(--border);
-    border-radius: 10px; padding: 14px 16px;
-  }
+  .fiche-box { background: var(--cream); border: 1px solid var(--border); border-radius: 10px; padding: 14px 16px; }
   .fiche-box h4 { font-size: 11px; font-weight: 700; color: var(--gray); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
   .fiche-box ul { padding-left: 16px; }
   .fiche-box li { font-size: 13px; color: #333; line-height: 1.7; }
   .fiche-box p { font-size: 13px; color: #333; line-height: 1.7; }
-
-  .signal-box {
-    background: #fff8e1; border-left: 4px solid var(--orange);
-    border-radius: 0 10px 10px 0; padding: 14px 16px; margin-bottom: 10px;
-  }
+  .signal-box { background: #fff8e1; border-left: 4px solid var(--orange); border-radius: 0 10px 10px 0; padding: 14px 16px; margin-bottom: 10px; }
   .signal-box h4 { font-size: 11px; font-weight: 700; color: var(--orange); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 6px; }
   .signal-box p { font-size: 13px; color: #555; line-height: 1.6; }
-
-  .email-box {
-    background: var(--green-bg); border: 1px solid #a8d5b5;
-    border-radius: 10px; padding: 16px 18px;
-  }
+  .email-box { background: var(--green-bg); border: 1px solid #a8d5b5; border-radius: 10px; padding: 16px 18px; }
   .email-box h4 { font-size: 11px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 12px; }
-  .email-preview {
-    background: white; border: 1px solid #cde0cf;
-    border-radius: 6px; padding: 14px 16px;
-    font-size: 13px; color: #333; line-height: 1.8;
-    font-style: italic; white-space: pre-wrap;
-  }
-
+  .email-preview { background: white; border: 1px solid #cde0cf; border-radius: 6px; padding: 14px 16px; font-size: 13px; color: #333; line-height: 1.8; white-space: pre-wrap; }
   .timeline { display: flex; flex-direction: column; gap: 10px; }
   .tl-item { display: flex; gap: 12px; align-items: flex-start; }
   .tl-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--navy); margin-top: 5px; flex-shrink: 0; }
@@ -334,29 +81,13 @@
   .tl-text { font-size: 13px; color: #333; line-height: 1.5; }
   .tl-text strong { color: var(--navy); }
   .tl-text span { color: var(--gray); font-size: 11px; }
-
-  .fiche-footer {
-    background: var(--navy); color: rgba(255,255,255,0.4);
-    text-align: center; padding: 12px; font-size: 11px;
-  }
-
-  /* ERROR */
-  .error-box {
-    display: none; background: #fff0f0; border: 1px solid #f5b8b8;
-    border-radius: 12px; padding: 20px 24px; margin-bottom: 24px;
-    color: #c0392b; font-size: 14px;
-  }
+  .fiche-footer { background: var(--navy); color: rgba(255,255,255,0.4); text-align: center; padding: 12px; font-size: 11px; }
+  .error-box { display: none; background: #fff0f0; border: 1px solid #f5b8b8; border-radius: 12px; padding: 20px 24px; margin-bottom: 24px; color: #c0392b; font-size: 14px; }
   .error-box.active { display: block; }
-
-  @media print {
-    .form-section, .topbar, .fiche-header-bar { display: none !important; }
-    body { background: white; }
-    .fiche-card { box-shadow: none; }
-  }
+  @media print { .form-section, .topbar, .fiche-header-bar { display: none !important; } body { background: white; } .fiche-card { box-shadow: none; } }
 </style>
 </head>
 <body>
-
 <div class="topbar">
   <div class="topbar-brand">
     <div class="topbar-logo">SBP</div>
@@ -367,10 +98,7 @@
   </div>
   <div class="topbar-badge">⚡ Propulsé par IA</div>
 </div>
-
 <div class="container">
-
-  <!-- FORMULAIRE -->
   <div class="form-section">
     <div class="form-header">
       <div class="form-icon">🎯</div>
@@ -379,7 +107,6 @@
         <p>Entrez les informations du contact — l'IA recherche et compile tout automatiquement</p>
       </div>
     </div>
-
     <div class="form-grid">
       <div class="form-group">
         <label>Prénom</label>
@@ -395,7 +122,7 @@
       </div>
       <div class="form-group">
         <label>Poste actuel</label>
-        <input type="text" id="poste" placeholder="ex: Responsable R&D Packaging" />
+        <input type="text" id="poste" placeholder="ex: Responsable Packaging" />
       </div>
       <div class="form-group">
         <label>Société précédente (optionnel)</label>
@@ -411,31 +138,24 @@
         </select>
       </div>
     </div>
-
     <button class="btn-generate" onclick="generateFiche()">
       <span>✨</span>
       <span>Générer la fiche prospect IA</span>
     </button>
   </div>
-
-  <!-- ERREUR -->
   <div class="error-box" id="errorBox"></div>
-
-  <!-- LOADING -->
   <div class="loading" id="loadingBox">
     <div class="spinner"></div>
     <h3>Génération en cours…</h3>
     <p>L'IA recherche et compile les informations</p>
     <div class="loading-steps">
-      <div class="loading-step" id="step1">🔍 Recherche du profil LinkedIn et parcours…</div>
-      <div class="loading-step" id="step2">🏢 Analyse de l'entreprise et actualités…</div>
-      <div class="loading-step" id="step3">⚡ Identification des signaux d'opportunité…</div>
-      <div class="loading-step" id="step4">✉️ Rédaction de l'email d'accroche…</div>
+      <div class="loading-step" id="step1">🔍 Recherche du profil et parcours…</div>
+      <div class="loading-step" id="step2">🏢 Analyse de l'entreprise…</div>
+      <div class="loading-step" id="step3">⚡ Identification des signaux…</div>
+      <div class="loading-step" id="step4">✉️ Rédaction de l'email…</div>
       <div class="loading-step" id="step5">📋 Mise en forme de la fiche…</div>
     </div>
   </div>
-
-  <!-- FICHE OUTPUT -->
   <div class="fiche-output" id="ficheOutput">
     <div class="fiche-header-bar">
       <h3>📋 Fiche générée</h3>
@@ -443,9 +163,7 @@
     </div>
     <div class="fiche-card" id="ficheCard"></div>
   </div>
-
 </div>
-
 <script>
 async function generateFiche() {
   const prenom = document.getElementById('prenom').value.trim();
@@ -454,133 +172,67 @@ async function generateFiche() {
   const poste = document.getElementById('poste').value.trim();
   const societePrev = document.getElementById('societe_prev').value.trim();
   const declencheur = document.getElementById('declencheur').value;
-
-  if (!prenom || !nom || !societe) {
-    showError('Veuillez remplir au minimum le prénom, le nom et la société.');
-    return;
-  }
-
+  if (!prenom || !nom || !societe) { showError('Veuillez remplir prénom, nom et société.'); return; }
   hideError();
   showLoading();
-
-  // Animate steps
   const steps = ['step1','step2','step3','step4','step5'];
   steps.forEach((s, i) => {
     setTimeout(() => {
-      steps.slice(0, i).forEach(prev => {
-        document.getElementById(prev).className = 'loading-step done';
-        document.getElementById(prev).innerHTML = document.getElementById(prev).innerHTML.replace(/^./, '✅');
-      });
+      steps.slice(0, i).forEach(prev => { document.getElementById(prev).className = 'loading-step done'; });
       document.getElementById(s).className = 'loading-step active';
     }, i * 2000);
   });
-
-  const declencheurLabel = {
-    job_change: 'Changement de poste récent',
-    cold: 'Prospection froide',
-    event: 'Événement / Salon',
-    referral: 'Recommandation'
-  }[declencheur];
-
-  const prompt = `Tu es un expert en sales intelligence B2B pour SBP, une entreprise de cartonnage et emballage basée en Franche-Comté.
-
-Génère une fiche prospect complète en JSON pour ce contact :
-- Prénom: ${prenom}
-- Nom: ${nom}
-- Société: ${societe}
-- Poste: ${poste || 'Non précisé'}
-- Société précédente: ${societePrev || 'Non précisé'}
+  const declencheurLabel = { job_change: 'Changement de poste récent', cold: 'Prospection froide', event: 'Événement / Salon', referral: 'Recommandation' }[declencheur];
+  const prompt = `Tu es un expert en sales intelligence B2B pour SBP, entreprise de cartonnage en Franche-Comté.
+Génère une fiche prospect JSON pour:
+- Prénom: ${prenom}, Nom: ${nom}
+- Société: ${societe}, Poste: ${poste || 'Non précisé'}
+- Ancienne société: ${societePrev || 'Non précisé'}
 - Déclencheur: ${declencheurLabel}
 
-Recherche sur le web des informations sur cette personne et cette entreprise, notamment :
-1. Le parcours professionnel de la personne
-2. Les actualités récentes de l'entreprise (packaging, RSE, innovations, CA, effectifs)
-3. Les enjeux packaging/emballage de l'entreprise
-4. Les opportunités pour SBP (cartonnage)
-
-Réponds UNIQUEMENT en JSON valide avec cette structure exacte :
-{
-  "initiales": "2 lettres",
-  "nom_complet": "Prénom Nom",
-  "poste": "Poste actuel",
-  "societe": "Nom société",
-  "localisation": "Ville, Pays",
-  "declencheur": "Description du déclencheur",
-  "tags": ["tag1", "tag2", "tag3"],
-  "profil_description": "Description du profil en 2-3 phrases",
-  "parcours": [
-    {"poste": "Poste", "entreprise": "Société", "periode": "2020-2024", "actuel": true},
-    {"poste": "Poste", "entreprise": "Société", "periode": "2015-2020", "actuel": false}
-  ],
-  "entreprise_chiffres": ["Chiffre 1", "Chiffre 2", "Chiffre 3", "Chiffre 4", "Chiffre 5"],
-  "entreprise_packaging": ["Info packaging 1", "Info packaging 2", "Info packaging 3", "Info packaging 4"],
-  "signaux": [
-    {"emoji": "🔥", "titre": "Signal #1 — Titre", "description": "Description détaillée du signal d'opportunité pour SBP"},
-    {"emoji": "📦", "titre": "Signal #2 — Titre", "description": "Description"},
-    {"emoji": "🌱", "titre": "Signal #3 — Titre", "description": "Description"}
-  ],
-  "email_objet": "Objet de l'email d'accroche",
-  "email_corps": "Corps de l'email d'accroche personnalisé avec les infos trouvées. Mentionner SBP Cartonnage Franche-Comté. Doit être chaleureux, personnalisé et donner envie de répondre.",
-  "actions": ["Action 1", "Action 2", "Action 3"],
-  "arguments_sbp": ["Argument 1", "Argument 2", "Argument 3", "Argument 4"]
-}`;
-
+Réponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, juste le JSON:
+{"initiales":"2 lettres majuscules","nom_complet":"${prenom} ${nom}","poste":"${poste || 'Non précisé'}","societe":"${societe}","localisation":"Ville, France","declencheur":"${declencheurLabel}","tags":["tag1","tag2","tag3"],"profil_description":"Description 2-3 phrases","parcours":[{"poste":"Poste actuel","entreprise":"${societe}","periode":"2024-present","actuel":true},{"poste":"Poste précédent","entreprise":"${societePrev || 'Entreprise précédente'}","periode":"2020-2024","actuel":false}],"entreprise_chiffres":["Chiffre clé 1","Chiffre clé 2","Chiffre clé 3"],"entreprise_packaging":["Info packaging 1","Info packaging 2","Info packaging 3"],"signaux":[{"emoji":"🔥","titre":"Signal #1","description":"Description opportunité SBP"},{"emoji":"📦","titre":"Signal #2","description":"Description"},{"emoji":"🌱","titre":"Signal #3","description":"Description"}],"email_objet":"Objet email","email_corps":"Corps email chaleureux mentionnant SBP Cartonnage Franche-Comté","actions":["Action 1","Action 2","Action 3"],"arguments_sbp":["Argument 1","Argument 2","Argument 3"]}`;
   try {
     const response = await fetch('/.netlify/functions/claude-proxy', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ prompt })
     });
-
     const data = await response.json();
     if (data.error) throw new Error(data.error);
-
-    const textBlocks = data.text || '';
-    if (!textBlocks) throw new Error('Réponse vide');
-
-    const jsonMatch = textBlocks.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Format de réponse invalide');
-
-    let jsonStr = jsonMatch[0].replace(/[\x00-\x1F\x7F]/g, ' ');
-    const fiche = JSON.parse(jsonStr);fiche.parcours = fiche.parcours || [];
-fiche.signaux = fiche.signaux || [];
-fiche.tags = fiche.tags || [];
-fiche.entreprise_chiffres = fiche.entreprise_chiffres || [];
-fiche.entreprise_packaging = fiche.entreprise_packaging || [];
-fiche.actions = fiche.actions || [];
-fiche.arguments_sbp = fiche.arguments_sbp || [];
-
-    
+    const text = data.text || '';
+    if (!text) throw new Error('Réponse vide');
+    const jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Format invalide');
+    const fiche = JSON.parse(jsonMatch[0]);
+    fiche.initiales = fiche.initiales || (prenom[0]+nom[0]).toUpperCase();
+    fiche.nom_complet = fiche.nom_complet || prenom+' '+nom;
+    fiche.poste = fiche.poste || poste || 'Non précisé';
+    fiche.societe = fiche.societe || societe;
+    fiche.localisation = fiche.localisation || 'France';
+    fiche.declencheur = fiche.declencheur || declencheurLabel;
+    fiche.profil_description = fiche.profil_description || '';
+    fiche.email_objet = fiche.email_objet || '';
+    fiche.email_corps = fiche.email_corps || '';
+    fiche.parcours = fiche.parcours || [];
+    fiche.signaux = fiche.signaux || [];
+    fiche.tags = fiche.tags || [];
+    fiche.entreprise_chiffres = fiche.entreprise_chiffres || [];
+    fiche.entreprise_packaging = fiche.entreprise_packaging || [];
+    fiche.actions = fiche.actions || [];
+    fiche.arguments_sbp = fiche.arguments_sbp || [];
     hideLoading();
-    renderFiche(fiche, prenom, nom);
-
+    renderFiche(fiche);
   } catch (err) {
     hideLoading();
-    showError('Erreur lors de la génération : ' + err.message);
+    showError('Erreur : ' + err.message);
   }
 }
-
-function renderFiche(f, prenom, nom) {
+function renderFiche(f) {
   const today = new Date().toLocaleDateString('fr-FR');
-
-  const parcoursHTML = f.parcours.map(p => `
-    <div class="tl-item">
-      <div class="tl-dot ${p.actuel ? 'active' : ''}"></div>
-      <div class="tl-text">
-        <strong>${p.poste} — ${p.entreprise}</strong><br>
-        <span>${p.periode}</span>
-      </div>
-    </div>
-  `).join('');
-
-  const signauxHTML = f.signaux.map(s => `
-    <div class="signal-box">
-      <h4>${s.emoji} ${s.titre}</h4>
-      <p>${s.description}</p>
-    </div>
-  `).join('');
-
-  const html = `
+  const parcoursHTML = f.parcours.map(p => `<div class="tl-item"><div class="tl-dot ${p.actuel?'active':''}"></div><div class="tl-text"><strong>${p.poste||''} — ${p.entreprise||''}</strong><br><span>${p.periode||''}</span></div></div>`).join('');
+  const signauxHTML = f.signaux.map(s => `<div class="signal-box"><h4>${s.emoji||''} ${s.titre||''}</h4><p>${s.description||''}</p></div>`).join('');
+  document.getElementById('ficheCard').innerHTML = `
     <div class="fiche-top">
       <div class="fiche-top-left">
         <div class="fiche-avatar">${f.initiales}</div>
@@ -590,111 +242,51 @@ function renderFiche(f, prenom, nom) {
           <div class="fiche-company">📍 ${f.societe} — ${f.localisation}</div>
           <div class="fiche-tags">
             <span class="ftag orange">⚡ ${f.declencheur}</span>
-            ${f.tags.map(t => `<span class="ftag">${t}</span>`).join('')}
+            ${f.tags.map(t=>`<span class="ftag">${t}</span>`).join('')}
           </div>
         </div>
       </div>
-      <div class="fiche-top-right">
-        Généré le ${today}<br>
-        <strong>SBP Sales Intelligence</strong><br>
-        Apollo · LinkedIn · Presse
-      </div>
+      <div class="fiche-top-right">Généré le ${today}<br><strong>SBP Sales Intelligence</strong></div>
     </div>
-
     <div class="fiche-body">
-
       <div class="fiche-section">
         <div class="fiche-section-title">👤 Profil & Parcours</div>
         <div class="fiche-grid">
-          <div class="fiche-box">
-            <h4>Qui est-il/elle ?</h4>
-            <p>${f.profil_description}</p>
-          </div>
-          <div class="fiche-box">
-            <h4>Parcours carrière</h4>
-            <div class="timeline">${parcoursHTML}</div>
-          </div>
+          <div class="fiche-box"><h4>Profil</h4><p>${f.profil_description}</p></div>
+          <div class="fiche-box"><h4>Parcours</h4><div class="timeline">${parcoursHTML}</div></div>
         </div>
       </div>
-
       <div class="fiche-section">
-        <div class="fiche-section-title">🏢 ${f.societe} — Ce qu'il faut savoir</div>
+        <div class="fiche-section-title">🏢 ${f.societe}</div>
         <div class="fiche-grid">
-          <div class="fiche-box">
-            <h4>Chiffres clés</h4>
-            <ul>${f.entreprise_chiffres.map(c => `<li>${c}</li>`).join('')}</ul>
-          </div>
-          <div class="fiche-box">
-            <h4>Actualité packaging</h4>
-            <ul>${f.entreprise_packaging.map(p => `<li>${p}</li>`).join('')}</ul>
-          </div>
+          <div class="fiche-box"><h4>Chiffres clés</h4><ul>${f.entreprise_chiffres.map(c=>`<li>${c}</li>`).join('')}</ul></div>
+          <div class="fiche-box"><h4>Packaging</h4><ul>${f.entreprise_packaging.map(p=>`<li>${p}</li>`).join('')}</ul></div>
         </div>
       </div>
-
       <div class="fiche-section">
-        <div class="fiche-section-title">⚡ Signaux d'opportunité pour SBP</div>
+        <div class="fiche-section-title">⚡ Signaux d'opportunité</div>
         ${signauxHTML}
       </div>
-
       <div class="fiche-section">
-        <div class="fiche-section-title">✉️ Approche recommandée</div>
-        <div class="email-box">
-          <h4>📧 Email d'accroche suggéré</h4>
-          <div class="email-preview"><strong>Objet :</strong> ${f.email_objet}
-
-${f.email_corps}</div>
-        </div>
+        <div class="fiche-section-title">✉️ Email d'accroche</div>
+        <div class="email-box"><h4>📧 Email suggéré</h4><div class="email-preview"><strong>Objet :</strong> ${f.email_objet}\n\n${f.email_corps}</div></div>
       </div>
-
       <div class="fiche-section">
         <div class="fiche-section-title">✅ Actions & Arguments</div>
         <div class="fiche-grid">
-          <div class="fiche-box">
-            <h4>Actions recommandées</h4>
-            <ul>${f.actions.map(a => `<li>${a}</li>`).join('')}</ul>
-          </div>
-          <div class="fiche-box">
-            <h4>Arguments SBP à préparer</h4>
-            <ul>${f.arguments_sbp.map(a => `<li>${a}</li>`).join('')}</ul>
-          </div>
+          <div class="fiche-box"><h4>Actions</h4><ul>${f.actions.map(a=>`<li>${a}</li>`).join('')}</ul></div>
+          <div class="fiche-box"><h4>Arguments SBP</h4><ul>${f.arguments_sbp.map(a=>`<li>${a}</li>`).join('')}</ul></div>
         </div>
       </div>
-
     </div>
-
-    <div class="fiche-footer">
-      Fiche générée par SBP Sales Intelligence · Données Apollo.io, LinkedIn et sources presse · Confidentiel usage interne
-    </div>
-  `;
-
-  document.getElementById('ficheCard').innerHTML = html;
+    <div class="fiche-footer">SBP Sales Intelligence · Confidentiel usage interne</div>`;
   document.getElementById('ficheOutput').className = 'fiche-output active';
   document.getElementById('ficheOutput').scrollIntoView({ behavior: 'smooth' });
 }
-
-function showLoading() {
-  document.getElementById('loadingBox').className = 'loading active';
-  document.querySelector('.btn-generate').disabled = true;
-  ['step1','step2','step3','step4','step5'].forEach(s => {
-    document.getElementById(s).className = 'loading-step';
-  });
-  document.getElementById('ficheOutput').className = 'fiche-output';
-}
-
-function hideLoading() {
-  document.getElementById('loadingBox').className = 'loading';
-  document.querySelector('.btn-generate').disabled = false;
-}
-
-function showError(msg) {
-  const box = document.getElementById('errorBox');
-  box.textContent = '⚠️ ' + msg;
-  box.className = 'error-box active';
-}
-
-function hideError() {
-  document.getElementById('errorBox').className = 'error-box';
-}
+function showLoading() { document.getElementById('loadingBox').className='loading active'; document.querySelector('.btn-generate').disabled=true; ['step1','step2','step3','step4','step5'].forEach(s=>{document.getElementById(s).className='loading-step';}); document.getElementById('ficheOutput').className='fiche-output'; }
+function hideLoading() { document.getElementById('loadingBox').className='loading'; document.querySelector('.btn-generate').disabled=false; }
+function showError(msg) { const b=document.getElementById('errorBox'); b.textContent='⚠️ '+msg; b.className='error-box active'; }
+function hideError() { document.getElementById('errorBox').className='error-box'; }
 </script>
 </body>
 </html>
