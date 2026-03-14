@@ -20,13 +20,13 @@ exports.handler = async function(event, context) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          contents: [{ role: 'user', parts: [{ text: prompt }] }],
+          contents: [{ parts: [{ text: prompt }] }],
           generationConfig: { maxOutputTokens: 8192, temperature: 0.7 }
         })
       }
     );
     const data = await response.json();
-    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const text = data?.candidates?.[0]?.content?.parts?.[0]?.text || JSON.stringify(data);
     return {
       statusCode: 200,
       headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
