@@ -542,7 +542,14 @@ Réponds UNIQUEMENT en JSON valide avec cette structure exacte :
     if (!jsonMatch) throw new Error('Format de réponse invalide');
 
     let jsonStr = jsonMatch[0].replace(/[\x00-\x1F\x7F]/g, ' ');
-    const fiche = JSON.parse(jsonStr);
+    const fiche = JSON.parse(jsonStr);fiche.parcours = fiche.parcours || [];
+fiche.signaux = fiche.signaux || [];
+fiche.tags = fiche.tags || [];
+fiche.entreprise_chiffres = fiche.entreprise_chiffres || [];
+fiche.entreprise_packaging = fiche.entreprise_packaging || [];
+fiche.actions = fiche.actions || [];
+fiche.arguments_sbp = fiche.arguments_sbp || [];
+
     
     hideLoading();
     renderFiche(fiche, prenom, nom);
